@@ -1,53 +1,40 @@
 //
 //  DetailViewController.m
-//  SHXMLParserApp
+//  Sample for SHXML Parser
 //
-//  Created by Narasimharaj on 10/02/13.
+//  Created by Narasimharaj on 09/02/13.
 //  Copyright (c) 2013 SimHa. All rights reserved.
 //
 
 #import "DetailViewController.h"
 
-@interface DetailViewController ()
-- (void)configureView;
-@end
-
 @implementation DetailViewController
+
+@synthesize webView, dataItem;
+
+- (void)reset
+{
+	self.webView	=	nil;
+	self.dataItem	=	nil;
+}
 
 - (void)dealloc
 {
-    [_detailItem release];
-    [_detailDescriptionLabel release];
+	[self reset];
     [super dealloc];
 }
 
-#pragma mark - Managing the detail item
-
-- (void)setDetailItem:(id)newDetailItem
+- (void)viewWillAppear:(BOOL)animated
 {
-    if (_detailItem != newDetailItem) {
-        [_detailItem release];
-        _detailItem = [newDetailItem retain];
-
-        // Update the view.
-        [self configureView];
-    }
-}
-
-- (void)configureView
-{
-    // Update the user interface for the detail item.
-
-    if (self.detailItem) {
-        self.detailDescriptionLabel.text = [self.detailItem description];
-    }
+	[super viewWillAppear:animated];
+    self.title = self.dataItem.title;
+	[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.dataItem.link]]];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    [self configureView];
 }
 
 - (void)didReceiveMemoryWarning

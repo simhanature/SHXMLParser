@@ -1,8 +1,8 @@
 //
 //  AppDelegate.m
-//  SHXMLParserApp
+//  Sample for SHXML Parser
 //
-//  Created by Narasimharaj on 10/02/13.
+//  Created by Narasimharaj on 09/02/13.
 //  Copyright (c) 2013 SimHa. All rights reserved.
 //
 
@@ -12,6 +12,14 @@
 
 @implementation AppDelegate
 
+@synthesize webServices;
+
+-(id) init
+{
+    self = [super init];
+    self.webServices                    = [[[WebServices alloc] init] autorelease];
+    return self;
+}
 - (void)dealloc
 {
     [_window release];
