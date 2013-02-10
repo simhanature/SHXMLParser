@@ -31,10 +31,4 @@
 + (NSMutableArray *) convertDictionary:(NSMutableArray *) dictionaryArray toObjectArrayWithClassName:(NSString *)className classVariables:(NSArray *)classVariables;
 
 -(NSMutableArray *) parseData:(NSData *)XMLData withArrayPath:(NSString *)arrayPath andItemKeys:(NSArray *)itemKeys;
-- (void)clearIntermediateParserVariables;
-
-
-
-
-
 @end

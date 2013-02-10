@@ -40,6 +40,9 @@
     
 	if ([parser parse] == YES)
 	{
+        [self.rootElement release];
+        [self.arrayElement release];
+        [self.itemElement release]; //pathArray created from componentsSeparatedByString is not getting autorelease message until the 3 variables using it does not release it. but not sure about the reason
         return self.dataItems;
     }
     else    {
@@ -64,6 +67,10 @@
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
 {
+    if([elementName isEqualToString:self.rootElement]) //last autorelease of dataItem is not happening, dont know if it is the right fix for it. but not sure about the reason
+	{
+        [self.dataItem release];
+    }
     if([elementName isEqualToString:self.itemElement])
 	{
 		[self.dataItems addObject:self.dataItem];
@@ -85,8 +92,10 @@
 
 - (void)clearIntermediateParserVariables
 {
-    self.dataItems = nil;
 }
 
+-(void)dealloc{
+    [super dealloc];
+}
 
 @end
