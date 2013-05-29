@@ -1,12 +1,10 @@
-SHXMLParser
-===========
+## SHXMLParser
 
-Simple to use automatic XML Parser built on NSXML Parser
+Simple to use automatic XML Parser built on NSXML Parser.
 
 Download the class files for SHXMLParser (SHXMLParser.h & SHXMLParser.m)
 
-
-**XML**
+**XML Sample**
 
     <channel>
     <item id='1'>
@@ -22,18 +20,20 @@ Download the class files for SHXMLParser (SHXMLParser.h & SHXMLParser.m)
     </item>
     </channel>
 
-//Use the below code to get the Array of Dictionary Objects from an XML like the one above. 
-//No need to mention attributes names it will be take automatically.
+Use the below code to get the Array of Dictionary Objects from an XML like the one above. 
+There is no need to mention attributes names as they will be taken automatically.
 
-**Code:**
+``` objc
 NSArray *classVariables = [[NSArray arrayWithObjects:@"title", @"link", @"comments", @"description", nil] autorelease];
 SHXMLParser *parser = [[SHXMLParser alloc] init];
 NSMutableArray* myDataArray = [parser parseData:self.webServicesData withArrayPath:@"channel.item" andItemKeys:classVariables];
+```
 
 If you want to convert dictionary object into a class object, use code below.
 
-Code:
+``` objc
 self.dataItems = [SHXMLParser convertDictionary:myDataArray toObjectArrayWithClassName:@"DataItem" classVariables:classVariables];
+```
 
 Note that for above conversion class DataItem should contain public variables as mentioned in array class variables, else you will get runtime error.
 
