@@ -60,18 +60,16 @@
 {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 
-    NSArray *classVariables = [[NSArray arrayWithObjects:@"title", @"link", @"comments", @"description", nil] autorelease];
+    NSArray *classVariables = [NSArray arrayWithObjects:@"title", @"link", @"comments", @"description", nil];
     SHXMLParser *parser = [[SHXMLParser alloc] init];
     NSMutableArray* myDataArray = [parser parseData:self.webServicesData withArrayPath:@"channel.item" andItemKeys:classVariables];
     self.dataItems = [SHXMLParser convertDictionary:myDataArray toObjectArrayWithClassName:@"DataItem" classVariables:classVariables];
-    [myDataArray release];
-    [parser release];
     [self.callbackObject performSelector:self.successCallBack];
 }
 
 - (BOOL)getItems:(id)inObjectID responseCallback:(SEL)callbackMethod
 {
-	NSString *urlString = @"http://news.ycombinator.com/rss";
+	NSString *urlString = @"https://news.ycombinator.com/rss";
     
 	BOOL retVal = [self sendAsynchCommand:urlString caller:inObjectID responseCallback:callbackMethod errorCallback:nil];
     
@@ -80,7 +78,6 @@
 
 - (void)dealloc
 {
-    [super dealloc];
     self.webServicesConnection = nil;
     self.webServicesData = nil;
     self.dataItems = nil;

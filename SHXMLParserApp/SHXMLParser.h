@@ -18,6 +18,9 @@
     NSString* itemElement;
     NSString* arrayElement;
     NSArray* itemVariables;
+    NSString *lastRemovedItem;
+    NSMutableDictionary* resultObject;
+    NSMutableDictionary* currentItem;
 }
 
 @property (nonatomic, retain) NSMutableArray *dataItems;
@@ -27,6 +30,11 @@
 @property (nonatomic, retain) NSString *arrayElement;
 @property (nonatomic, retain) NSString *itemElement;
 @property (nonatomic, retain) NSArray *itemVariables;
+@property (nonatomic, retain) NSMutableArray *currentDepth;
+@property (nonatomic, retain) NSString *lastRemovedItem;
+@property (nonatomic, retain) NSMutableDictionary* resultObject;
+@property (nonatomic, retain) NSMutableDictionary* currentItem;
+
 
 + (NSMutableArray *) convertDictionary:(NSMutableArray *) dictionaryArray toObjectArrayWithClassName:(NSString *)className classVariables:(NSArray *)classVariables;
 

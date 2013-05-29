@@ -21,7 +21,6 @@
 - (void)dealloc
 {
 	[self reset];
-    [super dealloc];
 }
 
 - (void)viewWillAppear:(BOOL)animated

@@ -29,9 +29,7 @@
 							
 - (void)dealloc
 {
-    [_detailViewController release];
-    [_dataItems release];
-    [super dealloc];
+
 }
 
 - (void)viewDidLoad
@@ -39,7 +37,6 @@
     [super viewDidLoad];
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     [appDelegate.webServices getItems:self responseCallback:@selector(onGetResponse)];
-    
 }
 
 - (void)onGetResponse
@@ -76,7 +73,7 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
 
@@ -88,7 +85,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!self.detailViewController) {
-        self.detailViewController = [[[DetailViewController alloc] initWithNibName:@"DetailViewController" bundle:nil] autorelease];
+        self.detailViewController = [[DetailViewController alloc] initWithNibName:@"DetailViewController" bundle:nil];
     }
     DataItem *object = _dataItems[indexPath.row];
     self.detailViewController.dataItem = object;
