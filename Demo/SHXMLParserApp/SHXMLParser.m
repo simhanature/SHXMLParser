@@ -98,16 +98,19 @@
 	{
 		self.lastRemovedItem = [self.currentDepth lastObject];
         NSMutableDictionary *oldObject = [self.resultObject objectForKey:[self.currentDepth componentsJoinedByString:@"."]];
+        NSString *oldObjectPath = [self.currentDepth componentsJoinedByString:@"."];
         NSMutableArray *oldObjectArray = [self.resultObject objectForKey:[NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]]];
 
 		[self.currentDepth removeLastObject];
         NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
 		NSMutableDictionary *currentDict	= [self.resultObject objectForKey:objectPath];
         
-        if ([oldObjectArray count]>1) {
+        
+        if (oldObjectArray!=nil && [oldObjectArray count]>1) {
             [currentDict setObject:[oldObjectArray copy] forKey:self.lastRemovedItem];
+            [self.resultObject removeObjectForKey:oldObjectPath];
         }
-        else{
+        else if(oldObject!=nil){
             [currentDict setObject:[oldObject copy] forKey:self.lastRemovedItem];
         }
 	}
@@ -134,6 +137,11 @@
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
 {
+    NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
+    [self.resultObject removeObjectForKey:objectPath];
+    NSString			*arrayPath		= [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
+    [self.resultObject removeObjectForKey:objectPath];
+    [self.resultObject removeObjectForKey:arrayPath];
 	[self.currentParsedCharacterData appendString:string];
 }
 

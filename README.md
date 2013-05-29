@@ -35,6 +35,6 @@ If you want to convert dictionary object into a class object, use code below.
 self.dataItems = [SHXMLParser convertDictionary:myDataArray toObjectArrayWithClassName:@"DataItem" classVariables:classVariables];
 ```
 
-Note that for above conversion class DataItem should contain public variables as mentioned in array class variables, else you will get runtime error.
+Note that for above conversion, class named 'DataItem' should contain public variables as mentioned in array class variables, else you will get runtime error.
 
-Thats it, no need to write lots of parsing code to get xml data from NSXMLParser
+Thats it, no need to write lots of parsing code to get xml data from NSXMLParser.
