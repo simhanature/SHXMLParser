@@ -58,9 +58,7 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
-	if ([[self.currentDepth lastObject] isEqualToString:elementName])
-	{}
-	else
+	if (![[self.currentDepth lastObject] isEqualToString:elementName])
 	{
 		[self.currentDepth addObject:elementName];
 
@@ -93,26 +91,34 @@
 
 	if (currentDict != nil)
 		[currentArray addObject:[currentDict copy]];
-
-	if ([[self.currentDepth lastObject] isEqualToString:elementName])
-	{
-		self.lastRemovedItem = [self.currentDepth lastObject];
-        NSMutableDictionary *oldObject = [self.resultObject objectForKey:[self.currentDepth componentsJoinedByString:@"."]];
-        NSString *oldObjectPath = [self.currentDepth componentsJoinedByString:@"."];
-        NSMutableArray *oldObjectArray = [self.resultObject objectForKey:[NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]]];
-
-		[self.currentDepth removeLastObject];
+    
+    if (![elementName isEqualToString:self.lastRemovedItem] && self.currentDepth!=nil && self.lastRemovedItem!=nil) {
+        NSMutableArray *lastDepth = [NSMutableArray arrayWithArray:self.currentDepth];
+        [lastDepth addObject:self.lastRemovedItem];
+        
+        NSMutableDictionary *oldObject = [self.resultObject objectForKey:[lastDepth componentsJoinedByString:@"."]];
+        NSMutableArray *oldObjectArray = [self.resultObject objectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
+        
         NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
 		NSMutableDictionary *currentDict	= [self.resultObject objectForKey:objectPath];
         
-        
+        //link temporary objects on inner node to their parent node
         if (oldObjectArray!=nil && [oldObjectArray count]>1) {
             [currentDict setObject:[oldObjectArray copy] forKey:self.lastRemovedItem];
-            [self.resultObject removeObjectForKey:oldObjectPath];
         }
         else if(oldObject!=nil){
             [currentDict setObject:[oldObject copy] forKey:self.lastRemovedItem];
         }
+        
+        //removing temporary objects on inner node while ending their parent node
+        [self.resultObject removeObjectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
+        [self.resultObject removeObjectForKey:[NSString stringWithString:[lastDepth componentsJoinedByString:@"."]]];
+    }
+
+	if ([[self.currentDepth lastObject] isEqualToString:elementName])
+	{
+		self.lastRemovedItem = [self.currentDepth lastObject];
+		[self.currentDepth removeLastObject];
 	}
 
 	if ([elementName isEqualToString:self.itemElement])
