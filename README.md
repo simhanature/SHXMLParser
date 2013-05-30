@@ -1,6 +1,6 @@
 ## SHXMLParser
 
-Simple to use automatic XML Parser built on NSXML Parser.
+Easy to use automatic XML Parser built on NSXML Parser.
 
 **How To Use:**
 
@@ -23,7 +23,7 @@ Add the library folder SHXMLParser to your project.
     </channel>
 
 Use the below code to get the Array of Dictionary Objects from an XML like the one above. 
-There is no need to mention attributes names as they will be taken automatically.
+Attributes will be taken automatically.
 
 ``` objc
     SHXMLParser		*parser			= [[SHXMLParser alloc] init];

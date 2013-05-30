@@ -124,20 +124,21 @@
 		[self.currentDepth removeLastObject];
 	}
 
-	if (![self.currentParsedCharacterData isEqualToString:@""])
-	{
-		NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
-		NSMutableDictionary *currentDict	= [self.resultObject objectForKey:objectPath];
-		[currentDict setObject:[self.currentParsedCharacterData copy] forKey:elementName];
-		self.currentParsedCharacterData = [NSMutableString string];
-	}
-	else
-		self.currentParsedCharacterData = [NSMutableString string];
+	// if (![self.currentParsedCharacterData isEqualToString:@""])
+	// {
+	NSString			*objectPath			= [self.currentDepth componentsJoinedByString:@"."];
+	NSMutableDictionary *currentDictObject	= [self.resultObject objectForKey:objectPath];
+	[currentDictObject setObject:[self.currentParsedCharacterData copy] forKey:elementName];
+	self.currentParsedCharacterData = [NSMutableString string];
+	// }
+	// else
+	//	self.currentParsedCharacterData = [NSMutableString string];
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
 {
 	NSString *objectPath = [self.currentDepth componentsJoinedByString:@"."];
+
 	[self.resultObject removeObjectForKey:objectPath];
 
 	NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];

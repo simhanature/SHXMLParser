@@ -64,7 +64,7 @@
 	NSArray			*dataArray		= [SHXMLParser getDataAtPath:@"rss.channel.item" fromResultObject:resultObject];
 
 	/*
-	 *   //Alternatively you can access your item array as you see below since you know your XML structure
+	 *   //Alternatively you can access your item array as you see below, since you know your XML structure
 	 *   NSDictionary* rssObject = [resultObject objectForKey:@"rss"];
 	 *   NSDictionary* channelObject = [rssObject objectForKey:@"channel"];
 	 *   NSMutableArray* myDataArray = [channelObject objectForKey:@"item"];
