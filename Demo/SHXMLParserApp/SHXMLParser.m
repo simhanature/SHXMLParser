@@ -15,6 +15,10 @@
 @property (nonatomic, strong) NSString				*lastRemovedItem;
 @property (nonatomic, strong) NSMutableDictionary	*resultObject;
 
+// Below boolean variables are used to acertain while parsing that we are in the leaf node not formatted spaces, newlines between node tags
+@property (nonatomic, assign) BOOL	foundCharacters;
+@property (nonatomic, assign) BOOL	elementStarted;
+
 @end
 
 @implementation SHXMLParser
@@ -85,10 +89,23 @@
 	[self.resultObject setObject:[NSMutableDictionary dictionaryWithDictionary:attributeDict] forKey:objectPath];
 
 	self.currentParsedCharacterData = [NSMutableString string];
+	//
+	self.elementStarted		= TRUE;
+	self.foundCharacters	= FALSE;
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
 {
+	if (self.foundCharacters && self.elementStarted)
+	{
+		NSString *objectPath = [self.currentDepth componentsJoinedByString:@"."];
+
+		[self.resultObject removeObjectForKey:objectPath];
+
+		NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
+		[self.resultObject removeObjectForKey:arrayPath];
+	}
+
 	NSString			*arrayPath		= [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
 	NSMutableArray		*currentArray	= [self.resultObject objectForKey:arrayPath];
 	NSMutableDictionary *currentDict	= [self.resultObject objectForKey:[self.currentDepth componentsJoinedByString:@"."]];
@@ -124,26 +141,17 @@
 		[self.currentDepth removeLastObject];
 	}
 
-	// if (![self.currentParsedCharacterData isEqualToString:@""])
-	// {
 	NSString			*objectPath			= [self.currentDepth componentsJoinedByString:@"."];
 	NSMutableDictionary *currentDictObject	= [self.resultObject objectForKey:objectPath];
 	[currentDictObject setObject:[self.currentParsedCharacterData copy] forKey:elementName];
 	self.currentParsedCharacterData = [NSMutableString string];
-	// }
-	// else
-	//	self.currentParsedCharacterData = [NSMutableString string];
+	//
+	self.elementStarted = FALSE;
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
 {
-	NSString *objectPath = [self.currentDepth componentsJoinedByString:@"."];
-
-	[self.resultObject removeObjectForKey:objectPath];
-
-	NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
-	[self.resultObject removeObjectForKey:arrayPath];
-
+	self.foundCharacters = TRUE;
 	[self.currentParsedCharacterData appendString:string];
 }
 
