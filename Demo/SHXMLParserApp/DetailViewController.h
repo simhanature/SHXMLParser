@@ -12,11 +12,11 @@
 
 @interface DetailViewController : UIViewController
 {
-    IBOutlet		UIWebView	*webView;
-	DataItem				*dataItem;
+	IBOutlet UIWebView	*webView;
+	DataItem			*dataItem;
 }
 
-@property (nonatomic, retain) IBOutlet		UIWebView	*webView;
-@property (nonatomic, retain) DataItem	*dataItem;
+@property (nonatomic, retain) IBOutlet UIWebView	*webView;
+@property (nonatomic, retain) DataItem				*dataItem;
 
 @end

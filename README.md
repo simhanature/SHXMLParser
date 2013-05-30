@@ -2,7 +2,9 @@
 
 Simple to use automatic XML Parser built on NSXML Parser.
 
-Download the class files for SHXMLParser (SHXMLParser.h & SHXMLParser.m)
+**How To Use:**
+
+Add the library folder SHXMLParser to your project.
 
 **XML Sample**
 
@@ -24,17 +26,28 @@ Use the below code to get the Array of Dictionary Objects from an XML like the o
 There is no need to mention attributes names as they will be taken automatically.
 
 ``` objc
-NSArray *classVariables = [[NSArray arrayWithObjects:@"title", @"link", @"comments", @"description", nil] autorelease];
-SHXMLParser *parser = [[SHXMLParser alloc] init];
-NSMutableArray* myDataArray = [parser parseData:self.webServicesData withArrayPath:@"channel.item" andItemKeys:classVariables];
+    SHXMLParser		*parser			= [[SHXMLParser alloc] init];
+	NSDictionary	*resultObject	= [parser parseData:self.webServicesData];
+	NSArray			*dataArray		= [SHXMLParser getDataAtPath:@"rss.channel.item" fromResultObject:resultObject];
 ```
 
-If you want to convert dictionary object into a class object, use code below.
+Note: In case, the path used ("rss.channel.item") contains only one item, NSDictionary will be returned instead of NSArray
+
+If you want to convert dictionary objects in your data array into a class object for type safety, use code below.
 
 ``` objc
-self.dataItems = [SHXMLParser convertDictionary:myDataArray toObjectArrayWithClassName:@"DataItem" classVariables:classVariables];
+	NSArray *classVariables = [NSArray arrayWithObjects:@"title", @"link", @"comments", @"description", nil];
+	self.dataItems = [SHXMLParser convertDictionaryArray:dataArray toObjectArrayWithClassName:@"DataItem" classVariables:classVariables];
 ```
 
-Note that for above conversion, class named 'DataItem' should contain public variables as mentioned in array class variables, else you will get runtime error.
+Note that for above conversion, class named 'DataItem' should contain public variables as mentioned in array 'classVariables', otherwise you will get runtime error.
 
-Thats it, no need to write lots of parsing code to get xml data from NSXMLParser.
+Thats it, no need to write lot of node and element specific parsing code to retrieve data using NSXMLParser from XML data.
+
+**Requirements**
+It requires iOS 5.0+ and uses ARC. It is built and tested using Xcode 4.5+.
+
+Feel free to fork and update the library
+
+**License**
+The MIT License

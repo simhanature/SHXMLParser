@@ -10,16 +10,15 @@
 
 @interface DataItem : NSObject
 {
-    NSString* title;
-    NSString* description;
-    NSString* link;
-    NSString* comments;
+	NSString	*title;
+	NSString	*description;
+	NSString	*link;
+	NSString	*comments;
 }
 
-@property (nonatomic, retain) NSString* title;
-@property (nonatomic, retain) NSString* description;
-@property (nonatomic, retain) NSString* link;
-@property (nonatomic, retain) NSString* comments;
-
+@property (nonatomic, retain) NSString	*title;
+@property (nonatomic, retain) NSString	*description;
+@property (nonatomic, retain) NSString	*link;
+@property (nonatomic, retain) NSString	*comments;
 
 @end

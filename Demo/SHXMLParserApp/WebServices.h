@@ -10,20 +10,20 @@
 
 @interface WebServices : NSObject <NSXMLParserDelegate>
 {
-	NSMutableData *webServicesData;
+	NSMutableData	*webServicesData;
 	NSURLConnection *webServicesConnection;
-	SEL successCallBack;
-	SEL errorCallBack;
-	id callbackObject;
-    NSMutableArray *dataItems;
+	SEL				successCallBack;
+	SEL				errorCallBack;
+	id				callbackObject;
+	NSArray			*dataItems;
 }
 
-@property (nonatomic, retain) NSMutableArray *dataItems;
-@property (nonatomic, retain) NSMutableData *webServicesData;
-@property (nonatomic, retain) NSURLConnection *webServicesConnection;
-@property (nonatomic, assign) SEL successCallBack;
-@property (nonatomic, assign) SEL errorCallBack;
-@property (nonatomic, retain) id callbackObject;
+@property (nonatomic, retain) NSArray			*dataItems;
+@property (nonatomic, retain) NSMutableData		*webServicesData;
+@property (nonatomic, retain) NSURLConnection	*webServicesConnection;
+@property (nonatomic, assign) SEL				successCallBack;
+@property (nonatomic, assign) SEL				errorCallBack;
+@property (nonatomic, retain) id				callbackObject;
 
 - (BOOL)sendAsynchCommand:(NSString *)finalCommand caller:(id)caller responseCallback:(SEL)callbackMethod errorCallback:(SEL)errorCallbackMethod;
 - (BOOL)getItems:(id)inObjectID responseCallback:(SEL)callbackMethod;

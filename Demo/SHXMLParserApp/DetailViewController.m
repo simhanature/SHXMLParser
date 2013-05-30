@@ -14,8 +14,8 @@
 
 - (void)reset
 {
-	self.webView	=	nil;
-	self.dataItem	=	nil;
+	self.webView	= nil;
+	self.dataItem	= nil;
 }
 
 - (void)dealloc
@@ -26,29 +26,29 @@
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
-    self.title = self.dataItem.title;
+	self.title = self.dataItem.title;
 	[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.dataItem.link]]];
 }
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+	[super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
 - (void)didReceiveMemoryWarning
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+	[super didReceiveMemoryWarning];
+	// Dispose of any resources that can be recreated.
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        self.title = NSLocalizedString(@"Detail", @"Detail");
-    }
-    return self;
+	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+
+	if (self)
+		self.title = NSLocalizedString(@"Detail", @"Detail");
+	return self;
 }
-							
+
 @end

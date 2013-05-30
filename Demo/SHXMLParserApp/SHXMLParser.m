@@ -8,15 +8,18 @@
 
 #import "SHXMLParser.h"
 
+@interface SHXMLParser ()
+
+@property (nonatomic, strong) NSMutableString		*currentParsedCharacterData;
+@property (nonatomic, strong) NSMutableArray		*currentDepth;
+@property (nonatomic, strong) NSString				*lastRemovedItem;
+@property (nonatomic, strong) NSMutableDictionary	*resultObject;
+
+@end
+
 @implementation SHXMLParser
 
-@synthesize dataItems, dataItem, currentParsedCharacterData;
-@synthesize rootElement, arrayElement, itemElement, itemVariables;
-@synthesize currentDepth;
-@synthesize lastRemovedItem;
-@synthesize resultObject, currentItem;
-
-+ (NSMutableArray *)convertDictionary:(NSMutableArray *)dictionaryArray toObjectArrayWithClassName:(NSString *)className classVariables:(NSArray *)classVariables
++ (NSArray *)convertDictionaryArray:(NSArray *)dictionaryArray toObjectArrayWithClassName:(NSString *)className classVariables:(NSArray *)classVariables
 {
 	NSMutableArray *objectArray = [NSMutableArray array];
 
@@ -33,26 +36,33 @@
 	return objectArray;
 }
 
-- (NSMutableArray *)parseData:(NSData *)XMLData withArrayPath:(NSString *)arrayPath andItemKeys:(NSArray *)itemKeys
++ (id)getDataAtPath:(NSString *)path fromResultObject:(NSDictionary *)resultObject
+{
+	id		dataObject	= resultObject;
+	NSArray *pathArray	= [path componentsSeparatedByString:@"."];
+
+	for (NSString *step in pathArray) {
+		if ([dataObject isKindOfClass:[NSDictionary class]])
+			dataObject = [dataObject objectForKey:step];
+		else
+			return nil;
+	}
+
+	return dataObject;
+}
+
+- (NSDictionary *)parseData:(NSData *)XMLData
 {
 	self.currentDepth	= [NSMutableArray array];
 	self.resultObject	= [NSMutableDictionary dictionary];
-
-	NSArray *pathArray = [arrayPath componentsSeparatedByString:@"."];
-
-	self.rootElement	= [pathArray objectAtIndex:0];
-	self.arrayElement	= [pathArray objectAtIndex:[pathArray count] - 2];
-	self.itemElement	= [pathArray objectAtIndex:[pathArray count] - 1];
-	self.itemVariables	= itemKeys;
 
 	NSXMLParser *parser = [[NSXMLParser alloc] initWithData:XMLData];
 
 	[parser setDelegate:self];
 
 	if ([parser parse] == YES)
-		return self.dataItems;
-	else
-	{}
+		return self.resultObject;
+
 	return nil;
 }
 
@@ -75,12 +85,6 @@
 	[self.resultObject setObject:[NSMutableDictionary dictionaryWithDictionary:attributeDict] forKey:objectPath];
 
 	self.currentParsedCharacterData = [NSMutableString string];
-
-	if ([elementName isEqualToString:self.rootElement])
-		self.dataItems = [[NSMutableArray alloc] init];
-
-	if ([elementName isEqualToString:self.itemElement])
-		self.dataItem = [NSMutableDictionary dictionaryWithDictionary:attributeDict];
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
@@ -91,44 +95,34 @@
 
 	if (currentDict != nil)
 		[currentArray addObject:[currentDict copy]];
-    
-    if (![elementName isEqualToString:self.lastRemovedItem] && self.currentDepth!=nil && self.lastRemovedItem!=nil) {
-        NSMutableArray *lastDepth = [NSMutableArray arrayWithArray:self.currentDepth];
-        [lastDepth addObject:self.lastRemovedItem];
-        
-        NSMutableDictionary *oldObject = [self.resultObject objectForKey:[lastDepth componentsJoinedByString:@"."]];
-        NSMutableArray *oldObjectArray = [self.resultObject objectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
-        
-        NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
+
+	if (![elementName isEqualToString:self.lastRemovedItem] && (self.currentDepth != nil) && (self.lastRemovedItem != nil))
+	{
+		NSMutableArray *lastDepth = [NSMutableArray arrayWithArray:self.currentDepth];
+		[lastDepth addObject:self.lastRemovedItem];
+
+		NSMutableDictionary *lastObject			= [self.resultObject objectForKey:[lastDepth componentsJoinedByString:@"."]];
+		NSMutableArray		*lastObjectArray	= [self.resultObject objectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
+
+		NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
 		NSMutableDictionary *currentDict	= [self.resultObject objectForKey:objectPath];
-        
-        //link temporary objects on inner node to their parent node
-        if (oldObjectArray!=nil && [oldObjectArray count]>1) {
-            [currentDict setObject:[oldObjectArray copy] forKey:self.lastRemovedItem];
-        }
-        else if(oldObject!=nil){
-            [currentDict setObject:[oldObject copy] forKey:self.lastRemovedItem];
-        }
-        
-        //removing temporary objects on inner node while ending their parent node
-        [self.resultObject removeObjectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
-        [self.resultObject removeObjectForKey:[NSString stringWithString:[lastDepth componentsJoinedByString:@"."]]];
-    }
+
+		// link temporary objects on inner node to their parent node
+		if ((lastObjectArray != nil) && ([lastObjectArray count] > 1))
+			[currentDict setObject:[lastObjectArray copy] forKey:self.lastRemovedItem];
+		else if (lastObject != nil)
+			[currentDict setObject:[lastObject copy] forKey:self.lastRemovedItem];
+
+		// removing temporary objects on inner node while ending their parent node
+		[self.resultObject removeObjectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
+		[self.resultObject removeObjectForKey:[NSString stringWithString:[lastDepth componentsJoinedByString:@"."]]];
+	}
 
 	if ([[self.currentDepth lastObject] isEqualToString:elementName])
 	{
 		self.lastRemovedItem = [self.currentDepth lastObject];
 		[self.currentDepth removeLastObject];
 	}
-
-	if ([elementName isEqualToString:self.itemElement])
-		[self.dataItems addObject:self.dataItem];
-	else
-		for (NSString *key in self.itemVariables) {
-			if ([elementName isEqualToString:key])
-				[self.dataItem setObject:self.currentParsedCharacterData forKey:key];
-		}
-
 
 	if (![self.currentParsedCharacterData isEqualToString:@""])
 	{
@@ -143,18 +137,13 @@
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
 {
-    NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
-    [self.resultObject removeObjectForKey:objectPath];
-    NSString			*arrayPath		= [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
-    [self.resultObject removeObjectForKey:objectPath];
-    [self.resultObject removeObjectForKey:arrayPath];
+	NSString *objectPath = [self.currentDepth componentsJoinedByString:@"."];
+	[self.resultObject removeObjectForKey:objectPath];
+
+	NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
+	[self.resultObject removeObjectForKey:arrayPath];
+
 	[self.currentParsedCharacterData appendString:string];
 }
-
-- (void)clearIntermediateParserVariables
-{}
-
-- (void)dealloc
-{}
 
 @end
