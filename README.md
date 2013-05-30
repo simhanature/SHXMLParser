@@ -7,20 +7,21 @@ Easy to use automatic XML Parser built on NSXML Parser.
 Add the library folder SHXMLParser to your project.
 
 **XML Sample**
-
-    <channel>
-    <item id='1'>
-    <title>I am under surveillance by Canadian agents, my computer has been backdoored</title>
-    <link>http://log.nadim.cc/?p=110</link>
-    <comments>http://news.ycombinator.com/item?id=5194489</comments>
-    <description><a href="http://news.ycombinator.com/item?id=5194489">Comments</a></description>
-    </item>
-    <item id='2'>
-    <title>Why I Like Go</title>
-    <link>https://gist.github.com/freeformz/4746274</link>
-    <description><a href="http://news.ycombinator.com/item?id=5195257">Comments</a></description>
-    </item>
-    </channel>
+    <rss>
+        <channel>
+            <item id='1'>
+                <title>I am under surveillance by Canadian agents, my computer has been backdoored</title>
+                <link>http://log.nadim.cc/?p=110</link>
+                <comments>http://news.ycombinator.com/item?id=5194489</comments>
+                <description><a href="http://news.ycombinator.com/item?id=5194489">Comments</a></description>
+            </item>
+            <item id='2'>
+                <title>Why I Like Go</title>
+                <link>https://gist.github.com/freeformz/4746274</link>
+                <description><a href="http://news.ycombinator.com/item?id=5195257">Comments</a></description>
+            </item>
+        </channel>
+    </rss>
 
 Use the below code to get the Array of Dictionary Objects from an XML like the one above. 
 Attributes will be taken automatically.
