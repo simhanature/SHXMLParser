@@ -7,7 +7,7 @@ Easy to use automatic XML Parser built on NSXML Parser.
 Add the library folder SHXMLParser to your project.
 
 **XML Sample**
-``` objc
+``` xml
 <rss>
     <channel>
         <item id='1'>
