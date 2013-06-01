@@ -1,6 +1,6 @@
 ## SHXMLParser
 
-Easy to use automatic XML Parser built on NSXML Parser.
+Easy to use automatic XML Parser built on NSXMLParser. Convert your XML data into native 'Obj C object' in just 2 steps.
 
 **How To Use:**
 
@@ -34,7 +34,8 @@ NSDictionary	*resultObject	= [parser parseData:self.webServicesData];
 NSArray			*dataArray		= [SHXMLParser getDataAtPath:@"rss.channel.item" fromResultObject:resultObject];
 ```
 
-Note: In case, the path used ("rss.channel.item") contains only one item, NSDictionary will be returned instead of NSArray
+Note: In case, the path used ("rss.channel.item") contains only one item, NSDictionary will be returned instead of NSArray. If the path leads to leaf with just a string value,
+    string value will be returned.
 
 If you want to convert dictionary objects in your data array into a class object for type safety, use code below.
 
@@ -53,4 +54,4 @@ It requires iOS 5.0+ and uses ARC. It is built and tested using Xcode 4.5+.
 Feel free to fork and update the library
 
 **License**
-The MIT License
+MIT License
