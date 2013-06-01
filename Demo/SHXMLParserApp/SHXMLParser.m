@@ -123,12 +123,31 @@
 
 		NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
 		NSMutableDictionary *currentDict	= [self.resultObject objectForKey:objectPath];
+        
+        NSString			*objectArrayPath		= [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
+		NSMutableArray      *currentArray	= [self.resultObject objectForKey:objectArrayPath];
+        NSMutableDictionary *currentArrayDict = [[currentArray lastObject] mutableCopy];
 
 		// link temporary objects on inner node to their parent node
 		if ((lastObjectArray != nil) && ([lastObjectArray count] > 1))
+        {
 			[currentDict setObject:[lastObjectArray copy] forKey:self.lastRemovedItem];
+            [currentArrayDict setObject:[lastObjectArray copy] forKey:self.lastRemovedItem];
+            
+            //
+            [currentArray removeLastObject];
+            [currentArray addObject:currentArrayDict];
+        }
 		else if (lastObject != nil)
+        {
 			[currentDict setObject:[lastObject copy] forKey:self.lastRemovedItem];
+			[currentArrayDict setObject:[lastObject copy] forKey:self.lastRemovedItem];
+            
+            //
+            [currentArray removeLastObject];
+            [currentArray addObject:currentArrayDict];
+        }
+        
 
 		// removing temporary objects on inner node while ending their parent node
 		[self.resultObject removeObjectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
