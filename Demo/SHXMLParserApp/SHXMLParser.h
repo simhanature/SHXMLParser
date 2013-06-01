@@ -1,6 +1,6 @@
 //
 //  SHXMLParser.h
-//  Sample for SHXML Parser
+//  SHXMLParser
 //
 //  Created by Narasimharaj on 09/02/13.
 //  Copyright (c) 2013 SimHa. All rights reserved.
