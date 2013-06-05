@@ -15,7 +15,7 @@
 @property (nonatomic, strong) NSString				*lastRemovedItem;
 @property (nonatomic, strong) NSMutableDictionary	*resultObject;
 
-// Below boolean variables are used to acertain while parsing that we are in the leaf node not formatted spaces, newlines between node tags
+// Below boolean variables are used to acertain while parsing that we are in the leaf node, but not formatted spaces or newlines between node tags
 @property (nonatomic, assign) BOOL	foundCharacters;
 @property (nonatomic, assign) BOOL	elementStarted;
 
@@ -72,17 +72,14 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
-	if (![[self.currentDepth lastObject] isEqualToString:elementName])
+	[self.currentDepth addObject:elementName];
+
+	if ([self.currentDepth count] > 1)
 	{
-		[self.currentDepth addObject:elementName];
+		NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
 
-		if ([self.currentDepth count] > 1)
-		{
-			NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
-
-			if ([self.resultObject objectForKey:arrayPath] == nil)
-				[self.resultObject setObject:[NSMutableArray array] forKey:arrayPath];
-		}
+		if ([self.resultObject objectForKey:arrayPath] == nil)
+			[self.resultObject setObject:[NSMutableArray array] forKey:arrayPath];
 	}
 
 	NSString *objectPath = [self.currentDepth componentsJoinedByString:@"."];
@@ -113,7 +110,7 @@
 	if (currentDict != nil)
 		[currentArray addObject:[currentDict copy]];
 
-	if (![elementName isEqualToString:self.lastRemovedItem] && (self.currentDepth != nil) && (self.lastRemovedItem != nil))
+	if ((self.currentDepth != nil) && (self.lastRemovedItem != nil))
 	{
 		NSMutableArray *lastDepth = [NSMutableArray arrayWithArray:self.currentDepth];
 		[lastDepth addObject:self.lastRemovedItem];
@@ -123,42 +120,38 @@
 
 		NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
 		NSMutableDictionary *currentDict	= [self.resultObject objectForKey:objectPath];
-        
-        NSString			*objectArrayPath		= [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
-		NSMutableArray      *currentArray	= [self.resultObject objectForKey:objectArrayPath];
-        NSMutableDictionary *currentArrayDict = [[currentArray lastObject] mutableCopy];
+
+		NSString			*objectArrayPath	= [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
+		NSMutableArray		*currentArray		= [self.resultObject objectForKey:objectArrayPath];
+		NSMutableDictionary *currentArrayDict	= [[currentArray lastObject] mutableCopy];
 
 		// link temporary objects on inner node to their parent node
 		if ((lastObjectArray != nil) && ([lastObjectArray count] > 1))
-        {
+		{
 			[currentDict setObject:[lastObjectArray copy] forKey:self.lastRemovedItem];
-            [currentArrayDict setObject:[lastObjectArray copy] forKey:self.lastRemovedItem];
-            
-            //
-            [currentArray removeLastObject];
-            [currentArray addObject:currentArrayDict];
-        }
+			[currentArrayDict setObject:[lastObjectArray copy] forKey:self.lastRemovedItem];
+
+			// Add inner nodes to items in a array
+			[currentArray removeLastObject];
+			[currentArray addObject:currentArrayDict];
+		}
 		else if (lastObject != nil)
-        {
+		{
 			[currentDict setObject:[lastObject copy] forKey:self.lastRemovedItem];
 			[currentArrayDict setObject:[lastObject copy] forKey:self.lastRemovedItem];
-            
-            //
-            [currentArray removeLastObject];
-            [currentArray addObject:currentArrayDict];
-        }
-        
+
+			// Add inner nodes to items in a array
+			[currentArray removeLastObject];
+			[currentArray addObject:currentArrayDict];
+		}
 
 		// removing temporary objects on inner node while ending their parent node
 		[self.resultObject removeObjectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
 		[self.resultObject removeObjectForKey:[NSString stringWithString:[lastDepth componentsJoinedByString:@"."]]];
 	}
 
-	if ([[self.currentDepth lastObject] isEqualToString:elementName])
-	{
-		self.lastRemovedItem = [self.currentDepth lastObject];
-		[self.currentDepth removeLastObject];
-	}
+	self.lastRemovedItem = [self.currentDepth lastObject];
+	[self.currentDepth removeLastObject];
 
 	NSString			*objectPath			= [self.currentDepth componentsJoinedByString:@"."];
 	NSMutableDictionary *currentDictObject	= [self.resultObject objectForKey:objectPath];
