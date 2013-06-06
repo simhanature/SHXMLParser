@@ -109,6 +109,7 @@
 	if (currentDict != nil)
 		[currentArray addObject:[currentDict copy]];
 
+    //adding the ended nodes to current node starts here
 	if (_currentDepth != nil)
 	{
 		NSMutableArray *endedNodes = [NSMutableArray array];
@@ -159,12 +160,30 @@
 			[_resultObject removeObjectForKey:[NSString stringWithString:[endedDepth componentsJoinedByString:@"."]]];
 		}
 	}
+    //adding the ended nodes to current node ends here
 
 	[_currentDepth removeLastObject];
 
+    //Writing current element values below
+    
+    //We are checking for repeated elements with string values so that they can be converted to array
 	NSString			*objectPath			= [_currentDepth componentsJoinedByString:@"."];
 	NSMutableDictionary *currentDictObject	= [_resultObject objectForKey:objectPath];
-	[currentDictObject setObject:[_currentParsedCharacterData copy] forKey:elementName];
+    if([currentDictObject objectForKey:elementName] == nil)    {
+        [currentDictObject setObject:[_currentParsedCharacterData copy] forKey:elementName];
+    }
+    else if([[currentDictObject objectForKey:elementName] isKindOfClass:[NSArray class]] || [[currentDictObject objectForKey:elementName] isKindOfClass:[NSMutableArray class]])   {
+        NSMutableArray *tempArray = [[currentDictObject objectForKey:elementName] mutableCopy];
+        [tempArray addObject:[_currentParsedCharacterData copy]];
+        [currentDictObject setObject:tempArray forKey:elementName];
+    }
+    else if ([[currentDictObject objectForKey:elementName] isKindOfClass:[NSString class]])
+    {
+        NSMutableArray *tempArray = [NSMutableArray array];
+        [tempArray addObject:[currentDictObject objectForKey:elementName]];
+        [tempArray addObject:[_currentParsedCharacterData copy]];
+        [currentDictObject setObject:tempArray forKey:elementName];
+    }
 	_currentParsedCharacterData = [NSMutableString string];
 	//
 	_elementStarted = FALSE;
