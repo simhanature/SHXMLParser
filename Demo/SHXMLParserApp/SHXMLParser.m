@@ -12,7 +12,6 @@
 
 @property (nonatomic, strong) NSMutableString		*currentParsedCharacterData;
 @property (nonatomic, strong) NSMutableArray		*currentDepth;
-@property (nonatomic, strong) NSString				*lastRemovedItem;
 @property (nonatomic, strong) NSMutableDictionary	*resultObject;
 
 // Below boolean variables are used to acertain while parsing that we are in the leaf node, but not formatted spaces or newlines between node tags
@@ -57,114 +56,124 @@
 
 - (NSDictionary *)parseData:(NSData *)XMLData
 {
-	self.currentDepth	= [NSMutableArray array];
-	self.resultObject	= [NSMutableDictionary dictionary];
+	_currentDepth	= [NSMutableArray array];
+	_resultObject	= [NSMutableDictionary dictionary];
 
 	NSXMLParser *parser = [[NSXMLParser alloc] initWithData:XMLData];
 
 	[parser setDelegate:self];
 
 	if ([parser parse] == YES)
-		return self.resultObject;
+		return _resultObject;
 
 	return nil;
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
-	[self.currentDepth addObject:elementName];
+	[_currentDepth addObject:elementName];
 
-	if ([self.currentDepth count] > 1)
+	if ([_currentDepth count] > 1)
 	{
-		NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
+		NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];
 
-		if ([self.resultObject objectForKey:arrayPath] == nil)
-			[self.resultObject setObject:[NSMutableArray array] forKey:arrayPath];
+		if ([_resultObject objectForKey:arrayPath] == nil)
+			[_resultObject setObject:[NSMutableArray array] forKey:arrayPath];
 	}
 
-	NSString *objectPath = [self.currentDepth componentsJoinedByString:@"."];
-	[self.resultObject setObject:[NSMutableDictionary dictionaryWithDictionary:attributeDict] forKey:objectPath];
+	NSString *objectPath = [_currentDepth componentsJoinedByString:@"."];
+	[_resultObject setObject:[NSMutableDictionary dictionaryWithDictionary:attributeDict] forKey:objectPath];
 
-	self.currentParsedCharacterData = [NSMutableString string];
+	_currentParsedCharacterData = [NSMutableString string];
 	//
-	self.elementStarted		= TRUE;
-	self.foundCharacters	= FALSE;
+	_elementStarted		= TRUE;
+	_foundCharacters	= FALSE;
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
 {
-	if (self.foundCharacters && self.elementStarted)
+	if (_foundCharacters && _elementStarted)
 	{
-		NSString *objectPath = [self.currentDepth componentsJoinedByString:@"."];
+		NSString *objectPath = [_currentDepth componentsJoinedByString:@"."];
 
-		[self.resultObject removeObjectForKey:objectPath];
+		[_resultObject removeObjectForKey:objectPath];
 
-		NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
-		[self.resultObject removeObjectForKey:arrayPath];
+		NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];
+		[_resultObject removeObjectForKey:arrayPath];
 	}
 
-	NSString			*arrayPath		= [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
-	NSMutableArray		*currentArray	= [self.resultObject objectForKey:arrayPath];
-	NSMutableDictionary *currentDict	= [self.resultObject objectForKey:[self.currentDepth componentsJoinedByString:@"."]];
+	NSString			*arrayPath		= [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];
+	NSMutableArray		*currentArray	= [_resultObject objectForKey:arrayPath];
+	NSMutableDictionary *currentDict	= [_resultObject objectForKey:[_currentDepth componentsJoinedByString:@"."]];
 
 	if (currentDict != nil)
 		[currentArray addObject:[currentDict copy]];
 
-	if ((self.currentDepth != nil) && (self.lastRemovedItem != nil))
+	if (_currentDepth != nil)
 	{
-		NSMutableArray *lastDepth = [NSMutableArray arrayWithArray:self.currentDepth];
-		[lastDepth addObject:self.lastRemovedItem];
+		NSMutableArray *endedNodes = [NSMutableArray array];
 
-		NSMutableDictionary *lastObject			= [self.resultObject objectForKey:[lastDepth componentsJoinedByString:@"."]];
-		NSMutableArray		*lastObjectArray	= [self.resultObject objectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
+		for (NSString *key in _resultObject) {
+			NSString *trimmedPath = [key stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]];
 
-		NSString			*objectPath		= [self.currentDepth componentsJoinedByString:@"."];
-		NSMutableDictionary *currentDict	= [self.resultObject objectForKey:objectPath];
+			if ([_currentDepth count] < [[trimmedPath componentsSeparatedByString:@"."] count])
+			{
+				NSMutableArray *keyArray = [[trimmedPath componentsSeparatedByString:@"."] mutableCopy];
 
-		NSString			*objectArrayPath	= [NSString stringWithFormat:@"%@[]", [self.currentDepth componentsJoinedByString:@"."]];
-		NSMutableArray		*currentArray		= [self.resultObject objectForKey:objectArrayPath];
-		NSMutableDictionary *currentArrayDict	= [[currentArray lastObject] mutableCopy];
+				if (![endedNodes containsObject:[keyArray lastObject]])
+					[endedNodes addObject:[keyArray lastObject]];
+			}
+		}
 
-		// link temporary objects on inner node to their parent node
-		if ((lastObjectArray != nil) && ([lastObjectArray count] > 1))
-		{
-			[currentDict setObject:[lastObjectArray copy] forKey:self.lastRemovedItem];
-			[currentArrayDict setObject:[lastObjectArray copy] forKey:self.lastRemovedItem];
+		for (NSString *endedNode in endedNodes) {
+			NSMutableArray *endedDepth = [NSMutableArray arrayWithArray:_currentDepth];
+			[endedDepth addObject:endedNode];
 
+			NSMutableDictionary *endedObject			= [_resultObject objectForKey:[endedDepth componentsJoinedByString:@"."]];
+			NSMutableArray		*endedObjectArray	= [_resultObject objectForKey:[NSString stringWithFormat:@"%@[]", [endedDepth componentsJoinedByString:@"."]]];
+
+			NSString			*objectPath		= [_currentDepth componentsJoinedByString:@"."];
+			NSMutableDictionary *currentDict	= [_resultObject objectForKey:objectPath];
+
+			NSString			*objectArrayPath	= [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];
+			NSMutableArray		*currentArray		= [_resultObject objectForKey:objectArrayPath];
+			NSMutableDictionary *currentArrayDict	= [[currentArray lastObject] mutableCopy];
+
+			// link temporary objects on inner node to their parent node
+			if ((endedObjectArray != nil) && ([endedObjectArray count] > 1))
+			{
+				[currentDict setObject:[endedObjectArray copy] forKey:endedNode];
+				[currentArrayDict setObject:[endedObjectArray copy] forKey:endedNode];
+			}
+			else if (endedObject != nil)
+			{
+				[currentDict setObject:[endedObject copy] forKey:endedNode];
+				[currentArrayDict setObject:[endedObject copy] forKey:endedNode];
+			}
 			// Add inner nodes to items in a array
 			[currentArray removeLastObject];
 			[currentArray addObject:currentArrayDict];
-		}
-		else if (lastObject != nil)
-		{
-			[currentDict setObject:[lastObject copy] forKey:self.lastRemovedItem];
-			[currentArrayDict setObject:[lastObject copy] forKey:self.lastRemovedItem];
 
-			// Add inner nodes to items in a array
-			[currentArray removeLastObject];
-			[currentArray addObject:currentArrayDict];
+			// removing temporary objects on inner node while ending their parent node
+			[_resultObject removeObjectForKey:[NSString stringWithFormat:@"%@[]", [endedDepth componentsJoinedByString:@"."]]];
+			[_resultObject removeObjectForKey:[NSString stringWithString:[endedDepth componentsJoinedByString:@"."]]];
 		}
-
-		// removing temporary objects on inner node while ending their parent node
-		[self.resultObject removeObjectForKey:[NSString stringWithFormat:@"%@[]", [lastDepth componentsJoinedByString:@"."]]];
-		[self.resultObject removeObjectForKey:[NSString stringWithString:[lastDepth componentsJoinedByString:@"."]]];
 	}
 
-	self.lastRemovedItem = [self.currentDepth lastObject];
-	[self.currentDepth removeLastObject];
+	[_currentDepth removeLastObject];
 
-	NSString			*objectPath			= [self.currentDepth componentsJoinedByString:@"."];
-	NSMutableDictionary *currentDictObject	= [self.resultObject objectForKey:objectPath];
-	[currentDictObject setObject:[self.currentParsedCharacterData copy] forKey:elementName];
-	self.currentParsedCharacterData = [NSMutableString string];
+	NSString			*objectPath			= [_currentDepth componentsJoinedByString:@"."];
+	NSMutableDictionary *currentDictObject	= [_resultObject objectForKey:objectPath];
+	[currentDictObject setObject:[_currentParsedCharacterData copy] forKey:elementName];
+	_currentParsedCharacterData = [NSMutableString string];
 	//
-	self.elementStarted = FALSE;
+	_elementStarted = FALSE;
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
 {
-	self.foundCharacters = TRUE;
-	[self.currentParsedCharacterData appendString:string];
+	_foundCharacters = TRUE;
+	[_currentParsedCharacterData appendString:string];
 }
 
 @end
