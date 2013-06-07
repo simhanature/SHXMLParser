@@ -2,9 +2,16 @@
 
 Easy to use automatic XML Parser built on NSXMLParser. Convert your XML data into native 'Obj C object' in just 2 steps.
 
-**How To Use:**
+**Installation:**
 
+***CocoaPod***
+1. Add `pod 'SHXMLParser'` to your Podfile.
+2. Run `pod install`
+
+***Manual***
 Add the library folder SHXMLParser to your project.
+
+### How To Use:
 
 **XML Sample**
 ``` xml
