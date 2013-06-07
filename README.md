@@ -1,4 +1,5 @@
-## SHXMLParser
+SHXMLParser [![Build Status](https://travis-ci.org/simhanature/shxmlparser.png)](https://travis-ci.org/simhanature/SHXMLParser)
+===========
 
 Easy to use automatic XML Parser built on NSXMLParser. Convert your XML data into native 'Obj C object' in just 2 steps.
 
