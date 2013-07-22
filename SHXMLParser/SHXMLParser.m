@@ -69,6 +69,19 @@
 	return nil;
 }
 
++ (NSArray *)getAsArray:(id)object
+{
+    NSMutableArray *myArray = [NSMutableArray array];
+    if([object isKindOfClass:[NSDictionary class]])    {
+        [myArray addObject:object];
+        return myArray;
+    }
+    else if([object isKindOfClass:[NSArray class]]){
+        return (NSArray*)object;
+    }
+    return myArray;
+}
+
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
 	[_currentDepth addObject:elementName];

@@ -57,6 +57,8 @@ Note that for above conversion, class named 'DataItem' should contain public var
 
 Thats it, no need to write lot of node and element specific parsing code to retrieve data using NSXMLParser from XML data.
 
+A small utility class method named getAsArray is there to get the nsdictionary object inside nsarray. This has been added because sometimes when the user is expecting an array from the parser it will be returned as nsdictionary if it contains only one object. Using this function will make sure that array is returned.
+
 **Requirements**
 
 It requires iOS 5.0+ and uses ARC. It is built and tested using Xcode 4.5+.
