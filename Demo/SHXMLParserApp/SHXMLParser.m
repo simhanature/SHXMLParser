@@ -107,12 +107,20 @@
 {
 	if (_foundCharacters && _elementStarted)
 	{
-		NSString *objectPath = [_currentDepth componentsJoinedByString:@"."];
+        NSString *objectPath = [_currentDepth componentsJoinedByString:@"."];
 
-		[_resultObject removeObjectForKey:objectPath];
-
-		NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];
-		[_resultObject removeObjectForKey:arrayPath];
+		if([[_resultObject objectForKey:objectPath] isKindOfClass:[NSDictionary class]] && [(NSDictionary*)[_resultObject objectForKey:objectPath] count]>0)
+        {
+            NSMutableDictionary* tempDict = [[_resultObject objectForKey:objectPath] mutableCopy];
+            [tempDict setObject:[_currentParsedCharacterData copy] forKey:@"innerContent"];
+            [_resultObject setObject:tempDict forKey:objectPath];
+        }
+        else{
+            [_resultObject removeObjectForKey:objectPath];
+            
+            NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];
+            [_resultObject removeObjectForKey:arrayPath];
+        }
 	}
 
 	NSString			*arrayPath		= [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];
@@ -185,6 +193,11 @@
     if([currentDictObject objectForKey:elementName] == nil)    {
         [currentDictObject setObject:[_currentParsedCharacterData copy] forKey:elementName];
     }
+    /*else if([[currentDictObject objectForKey:elementName] isKindOfClass:[NSMutableDictionary class]] || [[currentDictObject objectForKey:elementName] isKindOfClass:[NSDictionary class]])   {
+        NSMutableDictionary* tempDictionary = [[currentDictObject objectForKey:elementName] mutableCopy];
+        [tempDictionary setObject:[_currentParsedCharacterData copy] forKey:@"leafContent"];
+        [currentDictObject setObject:tempDictionary forKey:elementName];
+    }*/
     else if([[currentDictObject objectForKey:elementName] isKindOfClass:[NSArray class]] || [[currentDictObject objectForKey:elementName] isKindOfClass:[NSMutableArray class]])   {
         NSMutableArray *tempArray = [[currentDictObject objectForKey:elementName] mutableCopy];
         [tempArray addObject:[_currentParsedCharacterData copy]];
