@@ -107,12 +107,23 @@
 {
 	if (_foundCharacters && _elementStarted)
 	{
-		NSString *objectPath = [_currentDepth componentsJoinedByString:@"."];
+        NSString *objectPath = [_currentDepth componentsJoinedByString:@"."];
 
-		[_resultObject removeObjectForKey:objectPath];
-
-		NSString *arrayPath = [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];
-		[_resultObject removeObjectForKey:arrayPath];
+		if([[_resultObject objectForKey:objectPath] isKindOfClass:[NSDictionary class]] && [(NSDictionary*)[_resultObject objectForKey:objectPath] count]>0)
+        {
+            NSMutableDictionary *tempDict = [[_resultObject objectForKey:objectPath] mutableCopy];
+            [tempDict setObject:[_currentParsedCharacterData copy] forKey:@"leafContent"];
+            [_resultObject setObject:tempDict forKey:objectPath];
+        }
+        else if ([[_resultObject objectForKey:objectPath] isKindOfClass:[NSDictionary class]] && [(NSDictionary*)[_resultObject objectForKey:objectPath] count]==0)
+        {
+            [_resultObject removeObjectForKey:objectPath];
+            [_resultObject setObject:[_currentParsedCharacterData copy] forKey:objectPath];
+        }
+        else{
+            //[_resultObject removeObjectForKey:objectPath];
+            //[_resultObject removeObjectForKey:arrayPath];
+        }
 	}
 
 	NSString			*arrayPath		= [NSString stringWithFormat:@"%@[]", [_currentDepth componentsJoinedByString:@"."]];

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A078762217A4E7EA00ACC25E /* SHXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A078762117A4E7EA00ACC25E /* SHXMLParser.m */; };
 		A0E8BC0316C7BF930002401D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E8BC0216C7BF930002401D /* UIKit.framework */; };
 		A0E8BC0516C7BF930002401D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E8BC0416C7BF930002401D /* Foundation.framework */; };
 		A0E8BC0716C7BF930002401D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E8BC0616C7BF930002401D /* CoreGraphics.framework */; };
@@ -21,11 +22,12 @@
 		A0E8BC2216C7BF930002401D /* MasterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0E8BC2016C7BF930002401D /* MasterViewController.xib */; };
 		A0E8BC2516C7BF930002401D /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0E8BC2316C7BF930002401D /* DetailViewController.xib */; };
 		A0E8BC3116C7BFE50002401D /* DataItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E8BC2C16C7BFE50002401D /* DataItem.m */; };
-		A0E8BC3216C7BFE50002401D /* SHXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E8BC2E16C7BFE50002401D /* SHXMLParser.m */; };
 		A0E8BC3316C7BFE50002401D /* WebServices.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E8BC3016C7BFE50002401D /* WebServices.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A078762017A4E7EA00ACC25E /* SHXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHXMLParser.h; sourceTree = "<group>"; };
+		A078762117A4E7EA00ACC25E /* SHXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHXMLParser.m; sourceTree = "<group>"; };
 		A0E8BBFF16C7BF930002401D /* SHXMLParserApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SHXMLParserApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0E8BC0216C7BF930002401D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A0E8BC0416C7BF930002401D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -47,8 +49,6 @@
 		A0E8BC2416C7BF930002401D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DetailViewController.xib; sourceTree = "<group>"; };
 		A0E8BC2B16C7BFE50002401D /* DataItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataItem.h; sourceTree = "<group>"; };
 		A0E8BC2C16C7BFE50002401D /* DataItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataItem.m; sourceTree = "<group>"; };
-		A0E8BC2D16C7BFE50002401D /* SHXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHXMLParser.h; sourceTree = "<group>"; };
-		A0E8BC2E16C7BFE50002401D /* SHXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHXMLParser.m; sourceTree = "<group>"; };
 		A0E8BC2F16C7BFE50002401D /* WebServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebServices.h; sourceTree = "<group>"; };
 		A0E8BC3016C7BFE50002401D /* WebServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebServices.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,6 +67,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A078761F17A4E7EA00ACC25E /* SHXMLParser */ = {
+			isa = PBXGroup;
+			children = (
+				A078762017A4E7EA00ACC25E /* SHXMLParser.h */,
+				A078762117A4E7EA00ACC25E /* SHXMLParser.m */,
+			);
+			name = SHXMLParser;
+			path = ../../SHXMLParser;
+			sourceTree = "<group>";
+		};
 		A0E8BBF616C7BF930002401D = {
 			isa = PBXGroup;
 			children = (
@@ -97,10 +107,9 @@
 		A0E8BC0816C7BF930002401D /* SHXMLParserApp */ = {
 			isa = PBXGroup;
 			children = (
+				A078761F17A4E7EA00ACC25E /* SHXMLParser */,
 				A0E8BC2B16C7BFE50002401D /* DataItem.h */,
 				A0E8BC2C16C7BFE50002401D /* DataItem.m */,
-				A0E8BC2D16C7BFE50002401D /* SHXMLParser.h */,
-				A0E8BC2E16C7BFE50002401D /* SHXMLParser.m */,
 				A0E8BC2F16C7BFE50002401D /* WebServices.h */,
 				A0E8BC3016C7BFE50002401D /* WebServices.m */,
 				A0E8BC1116C7BF930002401D /* AppDelegate.h */,
@@ -202,8 +211,8 @@
 				A0E8BC1C16C7BF930002401D /* MasterViewController.m in Sources */,
 				A0E8BC1F16C7BF930002401D /* DetailViewController.m in Sources */,
 				A0E8BC3116C7BFE50002401D /* DataItem.m in Sources */,
-				A0E8BC3216C7BFE50002401D /* SHXMLParser.m in Sources */,
 				A0E8BC3316C7BFE50002401D /* WebServices.m in Sources */,
+				A078762217A4E7EA00ACC25E /* SHXMLParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
